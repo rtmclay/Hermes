@@ -19,6 +19,13 @@ function CmdLineOptions:execute(myTable)
       help   = 'return just the path without the command',
    }
 
+   cmdlineParser:add_option{
+      name   = {'--debug','-D'},
+      dest   = 'debug',
+      action = 'store_true',
+      help   = 'Turn on debugging',
+   }
+
 
    local optionTbl, pargs = cmdlineParser:parse(arg)
 

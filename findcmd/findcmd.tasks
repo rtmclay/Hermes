@@ -11,6 +11,15 @@ function taskMain()
    local cmd	   = masterTbl.pargs[1]
    local results   = findInPath(cmd,path)
 
+   if (masterTbl.debug) then
+      io.stderr:write("results ",results,"\n")
+      io.stderr:write("cmd: ",cmd,"\n")
+      io.stderr:write("PATH: ",path,"\n")
+   end
+
+   
+
+
    if (masterTbl.pathOnly) then
       results = dirname(results)
       if (results:sub(-1) == '/') then
