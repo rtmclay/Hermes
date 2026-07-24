@@ -104,11 +104,23 @@ function Finish.execute(self,myTable)
    local resultFn     = masterTbl.resultFn
    local runtimeFn    = masterTbl.runtimeFn
    local pargs        = masterTbl.pargs
+   local failFn       = masterTbl.failFn
    if (masterTbl.cmdResultFn) then
       pargs[#pargs+1] = masterTbl.cmdResultFn
    end
 
+   if (failFn and isFile(failFn)) then
+      os.remove(failFn)
+   end
+
    local result       = self:parseInput(pargs)
+
+   if (result ~= "passed" and failFn) then
+      local f = io.open(failFn,"w")
+      if (f) then
+         f:close()
+      end
+   end
 
    local myResult = { testresult = result }
 

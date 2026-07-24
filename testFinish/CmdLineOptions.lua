@@ -29,6 +29,13 @@ function CmdLineOptions:execute(myTable)
    }
 
    cmdlineParser:add_option{ 
+      name   = {'--onFailure'},
+      dest   = 'failFn',
+      action = 'store',
+      type   = 'string',
+   }
+
+   cmdlineParser:add_option{ 
       name   = {'-v','--verbose'},
       dest   = 'verbosityLevel',
       action = 'count'
