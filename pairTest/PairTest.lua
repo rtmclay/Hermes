@@ -1,5 +1,8 @@
-_DEBUG          = false
-local posix     = require("posix")
+_DEBUG             = false
+local posix        = require("posix")
+local unistd       = require("posix.unistd")
+local posix_getenv = unistd.getenv
+local posix_setenv = unistd.setenv
 
 PairTest = BaseTask:new()
 require("fileOps")
@@ -43,7 +46,7 @@ function PairTest:execute(myTable)
 
 
    for iStep = 0, nStep do
-      posix.setenv(cmd.PREFIX .. "EVENTSTEP", iStep, OVERWRITE)
+      posix_setenv(cmd.PREFIX .. "EVENTSTEP", iStep, OVERWRITE)
       print ("-----------------------------------------")
       print ("   EventStep: "..tostring(iStep))
       print ("-----------------------------------------\n")

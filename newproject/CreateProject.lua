@@ -1,5 +1,7 @@
 _DEBUG        = false
 local posix   = require("posix")
+local unistd  = require("posix.unistd")
+local chdir   = unistd.chdir
 
 CreateProject = BaseTask:new()
 
@@ -8,7 +10,7 @@ function CreateProject:execute(myTable)
    local projName  = masterTbl.pargs[1]
 
    os.execute("mkdir ".. projName)
-   posix.chdir(projName)
+   chdir(projName)
    userName = os.getenv("USER")
    if (userName == nil) then
       userName = os.getenv("LOGNAME")

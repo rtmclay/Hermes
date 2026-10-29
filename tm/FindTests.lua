@@ -6,8 +6,11 @@ require("common")
 require("Tst")
 require("dirlist")
 require("fileOps")
-local Dbg   = require("Dbg")
-
+local Dbg    = require("Dbg")
+local access = require("posix.unistd").access
+local chdir  = require("posix.unistd").chdir
+local getcwd = require("posix.unistd").getcwd
+local stat   = require("posix.sys.stat")
 
 function FindTests:execute(myTable)
    local masterTbl         = masterTbl()
@@ -45,13 +48,13 @@ function FindTests:execute(myTable)
    end
 
    for i,path in ipairs(pargs) do
-      local mystat = posix.stat(path)
+      local mystat = stat.stat(path)
       if (mystat == nil) then
          path   = pathJoin(masterTbl.projectDir,path)
-         mystat = posix.stat(path)
+         mystat = stat.stat(path)
       end
       dbg.print{"Reading: ",path,"\n"}
-      if (mystat and mystat.type == "regular") then
+      if (stat.ISREG(mystat.mode) ~= 0) then
 	 if (path:find(masterTbl.testRptExt.."$")) then
 	    FindTests:readTMfile(path)
 	 elseif (path:find(masterTbl.descriptExt.."$")) then
@@ -91,7 +94,7 @@ function FindTests:readTestDescriptFn(path)
    local masterTbl = masterTbl()
    local tagA      = masterTbl.tagA
    local targetA   = masterTbl.targetA
-   local fn        = pathJoin(posix.getcwd(), path)
+   local fn        = pathJoin(getcwd(), path)
    local epoch     = masterTbl.origEpoch
    local dbg       = Dbg:dbg()
    assert(loadfile(fn))()
@@ -215,30 +218,30 @@ function FindTests:buildCandidateTsts_id(idA, ntimes, target, epoch, candidateTs
       table.insert(fnTbl[fn],id)
    end
 
-   local cwd = posix.getcwd()
+   local cwd = getcwd()
    -- Read in test description file, store tests with id
    -- in masterTbl.candidateTsts 
    for fn in pairs(fnTbl) do
       local d, f = splitFileName(fn)
-      posix.chdir(d)
+      chdir(d)
       assert(loadfile(f))()
       local tstTbl = buildTstTbl(fn, testdescript, target, epoch, ntimes)
       for i,id in ipairs(fnTbl[fn]) do
 	 candidateTsts[id] = tstTbl[id]
       end
    end
-   posix.chdir(cwd)
+   chdir(cwd)
 end
 
 function FindTests:search(path)
    local dbg       = Dbg:dbg()
    local masterTbl = masterTbl()
 
-   if (not posix.access(path)) then return end
-   local cwd	   = posix.getcwd()
-   posix.chdir(path)
+   if (not access(path)) then return end
+   local cwd	   = getcwd()
+   chdir(path)
    if (masterTbl.verbosityLevel > 3) then
-      dbg.print{"Searching: ",posix.getcwd(),"\n"}
+      dbg.print{"Searching: ",cwd,"\n"}
    end
    dbg.print{"FindTests:search dirlist(\".\")"}
    local list	   = dirlist(".")
@@ -252,11 +255,11 @@ function FindTests:search(path)
 
    if (not found) then
       for _,v in ipairs(list.dirs) do
-	 local dir = pathJoin(posix.getcwd(), v)
+	 local dir = pathJoin(getcwd(), v)
 	 FindTests:search(dir)
       end
    end
-   posix.chdir(cwd)
+   chdir(cwd)
 end
 
 function FindTests:findLastTM(pargs)

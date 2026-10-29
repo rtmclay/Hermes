@@ -179,12 +179,12 @@ function CmdLineOptions:execute(myTable)
    end
    masterTbl.pargs = pargs
 
-   masterTbl.cwd = posix.getcwd()
+   masterTbl.cwd = getcwd()
    if (masterTbl.batchLog) then
       if (masterTbl.batchLog:sub(1,1) ~= '/') then
          masterTbl.batchLog = pathJoin(masterTbl.cwd,masterTbl.batchLog)
       end
-      posix.unlink(masterTbl.batchLog)
+      unlink(masterTbl.batchLog)
    end
 
    masterTbl.tagA       = expandOptions(masterTbl.tagA)

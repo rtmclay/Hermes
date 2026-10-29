@@ -5,6 +5,7 @@ require("strict")
 require("string_utils")
 require("fileOps")
 require("pairsByKeys")
+local stdlib    = require("posix.stdlib")
 
 local getenv    = posix.getenv
 local setenv    = posix.setenv

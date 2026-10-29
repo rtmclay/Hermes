@@ -1,6 +1,8 @@
 -- -*- lua -*-
-_DEBUG      = false
-local posix = require("posix")
+_DEBUG       = false
+local posix  = require("posix")
+local chdir  = require("posix.unistd").getcwd
+local getcwd = require("posix.unistd").getcwd
 
 require("strict")
 local dbg   = require("Dbg"):dbg()
@@ -105,15 +107,17 @@ function engine.verbosityLevel()
 end
 
 function findDirInDirTree(wd, fn)
-   local masterTbl = masterTbl()
-   local cwd       = posix.getcwd()
-   local dir       = nil
-   local prev      = ""
-   posix.chdir(wd)
+   local masterTbl  = masterTbl()
+   local cwd        = getcwd()
+   local dir        = nil
+   local prev       = ""
+   local posix_stat = require("posix.sys.stat")
+
+   chdir(wd)
    while (true) do
       local fullFn = pathJoin(wd,  fn)
-      local mystat = posix.stat(fullFn)
-      if (mystat and mystat.type == 'regular') then
+      local mystat = posix_stat(fullFn)
+      if (mystat and posix_stat.ISREG(mystat.mode) ~= 0) then
          dir = wd
          break
       end
@@ -121,11 +125,11 @@ function findDirInDirTree(wd, fn)
          Error("You must be in a project! Did not find: " .. masterTbl.projectFn)
       end
       prev = wd
-      posix.chdir("..")
-      wd  = posix.getcwd()
+      chdir("..")
+      wd  = getcwd()
    end
 
-   posix.chdir(cwd)
+   chdir(cwd)
    return dir
 end
 

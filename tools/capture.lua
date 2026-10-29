@@ -5,6 +5,7 @@ _DEBUG      = false
 local posix = require("posix")
 
 require("strict")
+local getcwd = require("posix.unistd").getcwd
 
 ------------------------------------------------------------------------
 --
@@ -42,7 +43,7 @@ local dbg   = require("Dbg"):dbg()
 
 function capture(cmd)
    dbg.start{"capture(",cmd,")"}
-   dbg.print{"cwd: ",posix.getcwd(),"\n",level=2}
+   dbg.print{"cwd: ",getcwd(),"\n",level=2}
    local p = io.popen(cmd)
    if p == nil then
       return nil

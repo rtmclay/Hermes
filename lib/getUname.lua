@@ -1,11 +1,14 @@
 _DEBUG      = false
-local posix = require("posix")
+local posix   = require("posix")
+local utsname = require("posix.sys.utsname")
+
 
 require("strict")
 function getUname()
    local t                = {}
-   local osName		  = posix.uname("%s")
-   local machName	  = posix.uname("%m")
+   local info             = utsname.uname()
+   local osName		  = info.sysname
+   local machName	  = info.machine
    osName		  = string.gsub(osName,"[ /]","_")
    if (string.lower(osName) == "aix") then
       machName = "rs6k"
@@ -15,7 +18,7 @@ function getUname()
    end
    t.osName    = osName
    t.machName  = machName
-   t.hostName  = posix.uname("%n")
+   t.hostName  = info.nodename
    t.os_mach   = osName .. '-' .. machName
    t.target    = os.getenv("TARGET") or ""
 

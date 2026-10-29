@@ -6,7 +6,10 @@ require("JobSubmitBase")
 require("serializeTbl")
 require("CleanEnv")
 require("fileOps")
+local chdir    = require("posix.unistd").chdir
 local dbg      = require("Dbg"):dbg()
+local getcwd   = require("posix.unistd").getcwd
+local unlink   = require("posix.unistd").unlink
 RunActiveTests = BaseTask:new()
 comment    = [[
    Test Results:
@@ -72,7 +75,7 @@ function RunActiveTests:execute(myTable)
       for target in pairs(masterTbl.tagTbl[tag].targetTbl) do
 	 local mTbl   = masterTbl.tagTbl[tag].targetTbl[target]
 	 _G.masterTbl = function() return mTbl end
-	 local cwd    = posix.getcwd() 
+	 local cwd    = getcwd() 
 	 local tstTbl = mTbl.tstTbl
 	 mTbl.passed  = masterTbl.passed
 	 mTbl.failed  = masterTbl.failed
@@ -83,7 +86,7 @@ function RunActiveTests:execute(myTable)
 	    i = i+1
 	    RunActiveTests:runTest(mTbl, tstTbl[id], i, numTests)
 	 end
-	 posix.chdir(cwd)
+	 chdir(cwd)
 	 masterTbl.passed = masterTbl.passed + mTbl.passed
 	 masterTbl.failed = masterTbl.failed + mTbl.failed
       end
@@ -148,10 +151,10 @@ function RunActiveTests:runTest(masterTbl, tst, iTest, numTests)
 
    local runScript       = tst:expandRunScript(envTbl, job)
 
-   local cwd = posix.getcwd()
-   posix.chdir(envTbl.outputDir)
+   local cwd = getcwd()
+   chdir(envTbl.outputDir)
    
-   posix.unlink(fullFn(tst:get('cmdResultFn')))
+   unlink(fullFn(tst:get('cmdResultFn')))
 
    local resultFn  = fullFn(tst:get('resultFn'))
    serializeTbl{name='myResult', value=resultTbl.started, fn=resultFn, indent=true}
@@ -178,5 +181,5 @@ function RunActiveTests:runTest(masterTbl, tst, iTest, numTests)
    job:runtest{scriptFn = scriptFn, idTag = idTag, background = background}
    job:Msg('Finished', iTest, numTests, id, envTbl.resultFn, background)
 
-   posix.chdir(cwd)
+   chdir(cwd)
 end

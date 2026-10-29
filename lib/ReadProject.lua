@@ -4,7 +4,8 @@ local posix = require("posix")
 ReadProject = BaseTask:new()
 require("strict")
 require("fileOps")
-local dbg   = require("Dbg"):dbg()
+local dbg    = require("Dbg"):dbg()
+local getcwd = require("posix.unistd").getcwd
 
 local function findPackageName(fileName)
    local masterTbl   = masterTbl()
@@ -59,12 +60,12 @@ end
 function ReadProject:execute(myTable)
    local masterTbl  = masterTbl()
 
-   masterTbl.projectDir = findDirInDirTree(posix.getcwd(),masterTbl.projectFn)
+   masterTbl.projectDir = findDirInDirTree(getcwd(),masterTbl.projectFn)
    local projectFn = pathJoin(masterTbl.projectDir, masterTbl.projectFn)
    assert(loadfile(projectFn))()
    
    masterTbl.projectData = ProjectData
-   masterTbl.packageName = findPackageName(posix.getcwd())
+   masterTbl.packageName = findPackageName(getcwd())
    masterTbl.packageDir  = pathJoin(masterTbl.projectDir, masterTbl.packageName)
 
    dbg.print{"packageDir:  ","\"",masterTbl.packageDir,"\"\n"}
