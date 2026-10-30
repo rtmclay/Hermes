@@ -1,7 +1,7 @@
 -- -*- lua -*-
 _DEBUG       = false
 local posix  = require("posix")
-local chdir  = require("posix.unistd").getcwd
+local chdir  = require("posix.unistd").chdir
 local getcwd = require("posix.unistd").getcwd
 
 require("strict")
@@ -116,8 +116,8 @@ function findDirInDirTree(wd, fn)
    chdir(wd)
    while (true) do
       local fullFn = pathJoin(wd,  fn)
-      local mystat = posix_stat(fullFn)
-      if (mystat and posix_stat.ISREG(mystat.mode) ~= 0) then
+      local mystat = posix_stat.stat(fullFn)
+      if (mystat and posix_stat.S_ISREG(mystat.st_mode) ~= 0) then
          dir = wd
          break
       end

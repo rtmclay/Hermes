@@ -54,7 +54,7 @@ function FindTests:execute(myTable)
          mystat = stat.stat(path)
       end
       dbg.print{"Reading: ",path,"\n"}
-      if (stat.ISREG(mystat.mode) ~= 0) then
+      if (stat.S_ISREG(mystat.st_mode) ~= 0) then
 	 if (path:find(masterTbl.testRptExt.."$")) then
 	    FindTests:readTMfile(path)
 	 elseif (path:find(masterTbl.descriptExt.."$")) then

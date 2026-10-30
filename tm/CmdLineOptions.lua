@@ -5,6 +5,7 @@ require("common")
 require("string_utils")
 require("fileOps")
 require("version")
+local getcwd = require("posix.unistd").getcwd
 
 CmdLineOptions = BaseTask:new()
 
